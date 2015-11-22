@@ -1,0 +1,135 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='c-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='d-flat'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='d-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='e-flat'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='e-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='f-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='g-flat'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='g-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='a-flat'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='a-natural'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='b-flat'></button>
+<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id='b-natural'></button>
+<button id="play">Play</button>
+
+<script>
+
+    var hold = (function () {
+        return {
+
+            audioContext: {},
+
+            notes: [
+                {key: 'c-natural'},
+                {key: 'd-flat'},
+                {key: 'd-natural'},
+                {key: 'e-flat'},
+                {key: 'e-natural'},
+                {key: 'f-natural'},
+                {key: 'g-flat'},
+                {key: 'g-natural'},
+                {key: 'a-flat'},
+                {key: 'a-natural'},
+                {key: 'b-flat'},
+                {key: 'b-natural'}
+            ],
+
+            onClick: function (el) {
+
+                playNote(this);
+
+                this.validate(el.id);
+            },
+
+            // Previous Game State
+            previousGameState: {
+                solution: ''
+            },
+
+            gameState: {
+                active: false,
+                solution: '',
+                guesses: 0,
+                streak: 0
+            },
+
+            setSolution: function () {
+                // TODO: Logic for preventing a note from being played twice in a row
+
+                this.gameState.solution = this.notes[Math.floor(Math.random() * this.notes.length)];
+
+            },
+
+            validate: function (note) {
+                if (note === this.gameState.solution) {
+
+                }
+            },
+
+            activate: function () {
+
+            },
+
+            deactivate: function () {
+
+            },
+
+            updateDisplay: function (state) {
+                console.dir(state);
+            },
+
+            initialize: function () {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                var that = this;
+                this.notes.forEach(function (element, index) {
+                    var request = new XMLHttpRequest();
+                    request.open('GET', 'sounds/' + element.key + '.wav', true);
+                    request.responseType = 'arraybuffer';
+
+
+                    request.onload = function () {
+                        var audioData = request.response;
+                        that.audioContext.decodeAudioData(audioData, function (buffer) {
+                            element.buffer = buffer;
+                            element.source = element.buffer;
+                        });
+                        var button = document.getElementById(element.key);
+                        button.addEventListener('click', that.onClick.bind(element));
+                        button.addEventListener('guess', function (e) {
+                            console.dir(e);
+                        });
+                        document.getElementById(element.key).innerText = element.key;
+                    };
+                    request.send();
+                });
+            }
+
+        };
+    })();
+
+    hold.initialize();
+
+
+    function playNote(el) {
+        el.source = hold.audioContext.createBufferSource();
+        el.source.buffer = el.buffer;
+        el.source.connect(hold.audioContext.destination);
+        el.source.loop = false;
+        el.source.start(0);
+    }
+</script>
+</body>
+</html>
