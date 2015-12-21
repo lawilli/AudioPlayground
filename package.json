@@ -1,0 +1,10 @@
+{
+  "name": "midis-touch",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "*",
+    "log": "*",
+    "socket.io": "*",
+    "underscore": "^1.8.3"
+  }
+}
